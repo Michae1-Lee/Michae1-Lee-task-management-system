@@ -34,12 +34,13 @@ public class UserService {
         }
     }
 
-    public User register(UserDto user) {
+    public User register(UserDto user, String role) {
         user.setPassword(encoder.encode(user.getPassword()));
         User userr = new User();
         userr.setUsername(user.getUsername());
         userr.setPassword(user.getPassword());
-        userr.setRole("USER");
+        //role == "USER" или "ADMIN"
+        userr.setRole(role.toUpperCase());
         saveUser(userr);
         return userr;
     }

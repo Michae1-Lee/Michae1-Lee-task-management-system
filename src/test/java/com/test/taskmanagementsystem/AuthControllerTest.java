@@ -2,6 +2,7 @@ package com.test.taskmanagementsystem;
 
 import com.test.taskmanagementsystem.controllers.AuthController;
 import com.test.taskmanagementsystem.dto.UserDto;
+import com.test.taskmanagementsystem.exceptions.UserAlreadyExists;
 import com.test.taskmanagementsystem.jwt.LoginResponse;
 import com.test.taskmanagementsystem.models.User;
 import com.test.taskmanagementsystem.services.AuthService;
@@ -12,8 +13,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -38,12 +42,14 @@ class AuthControllerTest {
     void testRegister() {
         UserDto userDto = new UserDto();
         User user = new User();
-        when(userService.register(userDto)).thenReturn(user);
+        String role = "USER";
 
-        User response = authController.register(userDto);
+        when(userService.register(userDto, role)).thenReturn(user);
+
+        User response = authController.register(userDto, role);
 
         assertEquals(user, response);
-        verify(userService, times(1)).register(userDto);
+        verify(userService, times(1)).register(userDto, role);
     }
 
     @Test
@@ -57,5 +63,19 @@ class AuthControllerTest {
 
         assertEquals(200, response.getStatusCodeValue());
         verify(authService, times(1)).authenticate(userDto);
+    }
+
+    @Test
+    void testHandleUserAlreadyExists() {
+        ResponseEntity<String> response = authController.handleException(new UserAlreadyExists());
+        assertEquals(409, response.getStatusCodeValue());
+        assertEquals("User already exists", response.getBody());
+    }
+
+    @Test
+    void testHandleInvalidJsonFormat() {
+        ResponseEntity<String> response = authController.handleException(new HttpMessageNotReadableException("Invalid json format"));
+        assertEquals(409, response.getStatusCodeValue());
+        assertEquals("Invalid json format", response.getBody());
     }
 }

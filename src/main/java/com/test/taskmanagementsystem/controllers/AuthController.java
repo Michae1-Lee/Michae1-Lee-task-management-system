@@ -11,10 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,8 +28,10 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public User register(@RequestBody UserDto user) {
-        return userService.register(user);
+    public User register(@RequestBody UserDto user,
+                         @RequestParam String role) {
+        //role == "USER" или "ADMIN"
+        return userService.register(user, role);
     }
 
     @PostMapping("/login")
