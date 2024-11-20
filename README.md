@@ -1,6 +1,6 @@
-Локальный запуск
-make run - билд и запуск
+Локальный запуск  
+make run - билд и запуск  
 make test - запуск тестов
 
-Swagger
+Swagger  
 http://localhost:8080/swagger-ui/index.html
