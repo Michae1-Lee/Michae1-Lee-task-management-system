@@ -37,7 +37,9 @@ public class TaskController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<List<TaskDto>> getAllTasks(
             @RequestParam(value = "author", required = false) String au,
-            @RequestParam(value = "executor", required = false) String ex) {
+            @RequestParam(value = "executor", required = false) String ex,
+            @RequestParam(value = "page", required = false) String p,
+            @RequestParam(value = "tasks_per_page",required = false) String tasksPerPage) {
         User author = null;
         User executor = null;
 
@@ -57,7 +59,7 @@ public class TaskController {
             }
         }
 
-        List<Task> tasks = taskService.getTasks(author, executor);
+        List<Task> tasks = taskService.getTasks(author, executor, p,tasksPerPage);
         List<TaskDto> taskDtos = tasks.stream()
                 .map(mapper::convertToTaskDto)
                 .toList();
@@ -105,15 +107,15 @@ public class TaskController {
 
     @ExceptionHandler
     public ResponseEntity<String> handleException(AuthorNotFound e){
-        return new ResponseEntity<>("Author not found", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("Author not found", HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler
     public ResponseEntity<String> handleException(ExecutorNotFound e){
-        return new ResponseEntity<>("Executor not found", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("Executor not found", HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler
     public ResponseEntity<String> handleException(TaskNotFound e){
-        return new ResponseEntity<>("Task not found", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("Task not found", HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler

@@ -10,6 +10,7 @@ import com.test.taskmanagementsystem.models.User;
 import com.test.taskmanagementsystem.repositories.TaskRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +27,17 @@ public class TaskService {
         this.userService = userService;
     }
 
-    public List<Task> getTasks(User author, User executor) {
+    public List<Task> getTasks(User author, User executor, String page, String tasksPerPage) {
         if (author == null && executor == null) {
+            if (page != null && tasksPerPage != null) {
+                try {
+                    int pageNumber = Integer.parseInt(page);
+                    int pageSize = Integer.parseInt(tasksPerPage);
+                    return taskRepository.findAll(PageRequest.of(pageNumber, pageSize)).getContent();
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Page and size must be valid integers", e);
+                }
+            }
             return taskRepository.findAll();
         }
 
@@ -41,6 +51,7 @@ public class TaskService {
 
         return taskRepository.findByAuthorAndExecutor(author, executor);
     }
+
 
     public TaskDto createTask(TaskDto taskDto) {
         User author;
