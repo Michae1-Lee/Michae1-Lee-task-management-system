@@ -40,7 +40,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
                         .requestMatchers("/login", "/register"
-                                ,"/swagger-ui/**", "/v3/api-docs/**", "/webjars/**").permitAll()
+                                ,"/swagger-ui/**", "/v3/api-docs/**", "/webjars/**","/error").permitAll()
                         .anyRequest().authenticated());
         http.sessionManagement(
                 session ->
